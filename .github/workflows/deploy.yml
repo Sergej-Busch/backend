@@ -1,0 +1,57 @@
+name: Build and Deploy to Kubernetes
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE_NAME: ghcr.io/sergej-busch/backend
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build project
+        run: ./gradlew build -x test
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build Docker image
+        run: docker build -t $IMAGE_NAME:${{ github.sha }} .
+
+      - name: Tag and push
+        run: |
+          docker tag $IMAGE_NAME:${{ github.sha }} $IMAGE_NAME:latest
+          docker push $IMAGE_NAME:${{ github.sha }}
+          docker push $IMAGE_NAME:latest
+
+      - name: Checkout GitOps repo
+        uses: actions/checkout@v3
+        with:
+          repository: Sergej-Busch/deploy
+          token: ${{ secrets.CR_PAT }}
+          path: gitops
+
+      - name: Update Helm values
+        run: |
+          cd gitops/apps/backend
+          sed -i "s|image:.*|image: $IMAGE_NAME:latest|g" values.yaml
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git commit -am "Update image to $IMAGE_NAME:latest"
+          git push
