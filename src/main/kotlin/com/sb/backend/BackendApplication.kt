@@ -25,4 +25,11 @@ class DemoController {
         return HelloResponse("Hello from coroutine")
         // test
     }
+
+    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
+    suspend fun sayHello2(): HelloResponse {
+        delay(1000)
+        return HelloResponse("Hello from spring")
+        // test
+    }
 }
