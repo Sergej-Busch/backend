@@ -23,5 +23,6 @@ class DemoController {
     suspend fun sayHello(): HelloResponse {
         delay(1000)
         return HelloResponse("Hello from coroutine")
+        // test
     }
 }
