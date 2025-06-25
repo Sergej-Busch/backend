@@ -21,6 +21,6 @@ class DemoController {
 
     @GetMapping("/", produces = [MediaType.APPLICATION_JSON_VALUE])
     suspend fun sayHello2(): HelloResponse {
-        return HelloResponse("Hello from ${words.random()}")
+        return HelloResponse("Hello from ${words.random()} und sweet home")
     }
 }
