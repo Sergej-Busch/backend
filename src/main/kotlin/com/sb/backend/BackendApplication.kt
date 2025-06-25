@@ -1,6 +1,5 @@
 package com.sb.backend
 
-import kotlinx.coroutines.delay
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.http.MediaType
@@ -18,11 +17,10 @@ data class HelloResponse(val message: String)
 
 @RestController
 class DemoController {
-    val words = listOf("Code,Space,Chaos,Spring,Kotlin,Nonsense")
+    val words = listOf("Code","Space","Chaos","Spring","Kotlin","Nonsense")
 
     @GetMapping("/", produces = [MediaType.APPLICATION_JSON_VALUE])
     suspend fun sayHello2(): HelloResponse {
-        delay(150)
         return HelloResponse("Hello from ${words.random()}")
     }
 }
