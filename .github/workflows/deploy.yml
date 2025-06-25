@@ -52,7 +52,7 @@ jobs:
           cd gitops/apps/backend
 
           sed -i "s|repository:.*|repository: $IMAGE_NAME|g" values.yaml
-          sed -i "s|tag:.*|tag: latest|g" values.yaml
+          sed -i "s|tag:.*|tag: ${{ github.sha }}|g" values.yaml
 
           if [ -n "$(git status --porcelain)" ]; then
             git config user.name "github-actions"
